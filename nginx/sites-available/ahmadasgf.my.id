@@ -1,0 +1,42 @@
+server {
+    server_name ahmadasgf.my.id www.ahmadasgf.my.id;
+
+    root /var/www/html;
+    index index.html;
+
+    location /test {
+        alias /home/ahmadasgf/test/;
+        index index.html;
+    }
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/ahmadasgf.my.id/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/ahmadasgf.my.id/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+server {
+    if ($host = www.ahmadasgf.my.id) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = ahmadasgf.my.id) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name ahmadasgf.my.id www.ahmadasgf.my.id;
+    return 404; # managed by Certbot
+
+
+
+
+}
