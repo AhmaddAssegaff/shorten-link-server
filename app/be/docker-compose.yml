@@ -1,0 +1,17 @@
+services:
+  app:
+    build:
+      context: /home/ahmadasgf/app/be
+      dockerfile: dockerfile
+    container_name: app-nest
+    ports:
+      - "3000:3000"
+    env_file:
+      - /home/ahmadasgf/app/be/.env
+    restart: always
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true
