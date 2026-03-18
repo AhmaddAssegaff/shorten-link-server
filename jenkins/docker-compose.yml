@@ -1,0 +1,19 @@
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "127.0.0.1:${JENKINS_PORT}:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+    restart: always
+    networks:
+      - backend
+
+volumes:
+  jenkins_data:
+
+networks:
+  backend:
+    external: true
