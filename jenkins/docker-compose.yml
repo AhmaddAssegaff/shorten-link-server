@@ -16,4 +16,5 @@ volumes:
 
 networks:
   backend:
-    external: true
+    name: backend
+    driver: bridge
