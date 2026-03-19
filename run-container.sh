@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVICES=("database" "jenkins" "monitoring" "observability")
+SERVICES=("pg-admin" "postgre" "jenkins" "monitoring" "observability")
 
 echo "=== Docker Service ==="
 echo ""
@@ -19,7 +19,7 @@ echo "Select services (separate with space):"
 echo ""
 
 for i in "${!SERVICES[@]}"; do
-    echo "$((i+1))) ${SERVICES[$i]}"
+    echo "$((i + 1))) ${SERVICES[$i]}"
 done
 
 echo ""
@@ -36,7 +36,7 @@ fi
 echo ""
 
 for num in $choices; do
-    index=$((num-1))
+    index=$((num - 1))
     svc=${SERVICES[$index]}
 
     if [ -z "$svc" ]; then
@@ -45,29 +45,29 @@ for num in $choices; do
     fi
 
     case $action in
-        1)
-            echo "Up $svc..."
-            docker compose -p $svc -f $svc/docker-compose.yml up -d
-            ;;
-        2)
-            echo "Down $svc..."
-            docker compose -p $svc -f $svc/docker-compose.yml down
-            ;;
-        3)
-            echo "Restart $svc..."
-            docker compose -p $svc -f $svc/docker-compose.yml restart
-            ;;
-        4)
-            echo "Stop $svc..."
-            docker compose -p $svc -f $svc/docker-compose.yml stop
-            ;;
-        5)
-            echo "Start $svc..."
-            docker compose -p $svc -f $svc/docker-compose.yml start
-            ;;
-        *)
-            echo "Invalid action"
-            exit 1
-            ;;
+    1)
+        echo "Up $svc..."
+        docker compose -p $svc -f $svc/docker-compose.yml up -d
+        ;;
+    2)
+        echo "Down $svc..."
+        docker compose -p $svc -f $svc/docker-compose.yml down
+        ;;
+    3)
+        echo "Restart $svc..."
+        docker compose -p $svc -f $svc/docker-compose.yml restart
+        ;;
+    4)
+        echo "Stop $svc..."
+        docker compose -p $svc -f $svc/docker-compose.yml stop
+        ;;
+    5)
+        echo "Start $svc..."
+        docker compose -p $svc -f $svc/docker-compose.yml start
+        ;;
+    *)
+        echo "Invalid action"
+        exit 1
+        ;;
     esac
 done

@@ -17,21 +17,6 @@ services:
     networks:
       - backend-net
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    ports:
-      - "0.0.0.0:5050:80"
-    depends_on:
-      - postgres
-    networks:
-      - backend-net
-      - mgmt-net
-
 volumes:
   postgres_data:
 
