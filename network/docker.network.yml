@@ -1,4 +1,19 @@
 networks:
-  backend:
-    name: backend
+  public-net:
+    name: public-net
     driver: bridge
+
+  backend-net:
+    name: backend-net
+    driver: bridge
+    internal: true
+
+  obs-net:
+    name: obs-net
+    driver: bridge
+    internal: true
+
+  mgmt-net:
+    name: mgmt-net
+    driver: bridge
+    internal: true
