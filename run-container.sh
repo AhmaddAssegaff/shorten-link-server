@@ -62,7 +62,7 @@ for num in $choices; do
             docker compose -p $svc -f $svc/docker-compose.yml stop
             ;;
         5)
-            echo "▶️ Start $svc..."
+            echo "Start $svc..."
             docker compose -p $svc -f $svc/docker-compose.yml start
             ;;
         *)

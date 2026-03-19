@@ -14,7 +14,22 @@ Simple network setup to separate traffic and improve security.
 ## Init
 
 ```bash
-docker compose -f docker-compose.network.yml up -d
+docker network create public-net
+docker network create backend-net --internal
+docker network create obs-net --internal
+docker network create mgmt-net --internal
+
+or just run the bash file in this directory
+chmod +x network/*.sh
+```
+
+## Inspect network
+
+```bash
+docker network inspect public-net
+docker network inspect backend-net
+docker network inspect obs-net
+docker network inspect mgmt-net
 ```
 
 ## ⚠️ Notes

@@ -9,12 +9,11 @@ services:
       - jenkins_data:/var/jenkins_home
     restart: always
     networks:
-      - backend
+      - mgmt-net
 
 volumes:
   jenkins_data:
 
 networks:
-  backend:
-    name: backend
-    driver: bridge
+  mgmt-net:
+    external: true

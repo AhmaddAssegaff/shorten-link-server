@@ -10,9 +10,8 @@ services:
       - /home/ahmadasgf/app/be/.env
     restart: always
     networks:
-      - backend
+      - backend-net
 
 networks:
-  backend:
-    name: backend
-    driver: bridge
+  backend-net:
+    external: true

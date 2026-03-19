@@ -7,8 +7,6 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - '${DB_PORT}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -17,7 +15,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - backend
+      - backend-net
 
   pgadmin:
     image: dpage/pgadmin4
@@ -31,12 +29,15 @@ services:
     depends_on:
       - postgres
     networks:
-      - backend
+      - backend-net
+      - mgmt-net
 
 volumes:
   postgres_data:
 
 networks:
-  backend:
-    name: backend
-    driver: bridge
+  backend-net:
+    external: true
+  mgmt-net:
+    external: true
+
