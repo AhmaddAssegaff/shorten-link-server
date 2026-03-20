@@ -1,8 +1,16 @@
 FROM jenkins/jenkins:lts
+
 USER root
 
-RUN apt-get update && apt-get install -y docker.io
+COPY --from=docker:24-cli /usr/local/bin/docker /usr/local/bin/docker
 
-RUN groupadd -g 999 docker || true && usermod -aG docker jenkins
+COPY --from=docker/compose-bin:latest /docker-compose /usr/local/bin/docker-compose
+
+RUN mkdir -p /usr/lib/docker/cli-plugins && \
+    ln -s /usr/local/bin/docker-compose /usr/lib/docker/cli-plugins/docker-compose
+
+ARG DOCKER_GID=999
+RUN groupadd -g ${DOCKER_GID} docker || true && \
+    usermod -aG docker jenkins
 
 USER jenkins
