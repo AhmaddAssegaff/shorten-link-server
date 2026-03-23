@@ -1,0 +1,15 @@
+services:
+  app-nest:
+    image: ghcr.io/ahmaddassegaff/shorten-link:latest
+    container_name: shorten-link-app
+    ports:
+      - "3000:3000"
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - public-net
+
+networks:
+  public-net:
+    external: true
