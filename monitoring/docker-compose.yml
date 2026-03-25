@@ -30,11 +30,6 @@ services:
       timeout: 3s
       retries: 5
     user: root
-    entrypoint: >
-      sh -c "
-        chown -R 10001:10001 /tmp/tempo &&
-        exec /tempo -config.file=/etc/tempo.yaml
-      "
     volumes:
       - ./etc/tempo.yaml:/etc/tempo.yaml
       - tempo-data:/tmp/tempo
