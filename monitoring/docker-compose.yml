@@ -70,7 +70,7 @@ services:
       prometheus:
         condition: service_healthy
     volumes:
-      - ./etc/collector-config.yaml:/etc/collector-config.yaml 
+      - ./etc/otel-collector-config.yaml:/etc/otel-collector-config.yaml 
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
     networks:
       - obs-net
