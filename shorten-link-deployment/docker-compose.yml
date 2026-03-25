@@ -9,7 +9,13 @@ services:
       - .env
     networks:
       - public-net
+      - backend-net
+      - obs-net
 
 networks:
   public-net:
+    external: true
+  backend-net:
+    external: true
+  obs-net:
     external: true
