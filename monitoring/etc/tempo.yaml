@@ -1,6 +1,5 @@
 server:
   http_listen_port: 3200
-  grpc_listen_port: 4317
 
 distributor:
   receivers:
@@ -11,17 +10,19 @@ distributor:
         http:
           endpoint: 0.0.0.0:4318
 
+ingester:
+  max_block_duration: 5m
+
 storage:
   trace:
-    backend: local                     
+    backend: local
+    block:
+      bloom_filter_false_positive_rate: 0.05
     wal:
       path: /tmp/tempo/wal
     local:
       path: /tmp/tempo/traces
-    pool:
-      max_workers: 100
-      queue_depth: 10000
 
 compactor:
   compaction:
-    block_retention: 48h
+    block_retention: 24h

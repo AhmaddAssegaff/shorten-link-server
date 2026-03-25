@@ -4,9 +4,9 @@ services:
     container_name: prometheus
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/ready"]
-      interval: 5s
-      timeout: 3s
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090/-/ready"]
+      interval: 10s
+      timeout: 5s
       retries: 5
     volumes:
       - ./etc/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -25,9 +25,9 @@ services:
     restart: unless-stopped
     command: ["-config.file=/etc/tempo.yaml"]
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:3200/ready"]
-      interval: 5s
-      timeout: 3s
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3200/ready"]
+      interval: 10s
+      timeout: 5s
       retries: 5
     user: root
     volumes:
@@ -44,9 +44,9 @@ services:
     restart: unless-stopped
     command: -config.file=/etc/loki/local-config.yaml
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:3100/ready"]
-      interval: 5s
-      timeout: 3s
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3100/ready"]
+      interval: 10s
+      timeout: 5s
       retries: 5
     volumes:
       - ./etc/loki-config.yaml:/etc/loki/local-config.yaml
@@ -61,11 +61,7 @@ services:
     container_name: otel-collector
     user: root
     restart: unless-stopped
-    command: ["--config=/etc/otel-collector-config.yaml"]
-    # ports:
-    #   - "4317:4317" # gRPC
-    #   - "4318:4318" # HTTP
-    #   - "8889:8889" # Port for Prometheus scrape metrics
+    command: ["--config=/etc/otel-collector-config.yaml"] 
     depends_on:
       tempo:
         condition: service_healthy
@@ -74,7 +70,7 @@ services:
       prometheus:
         condition: service_healthy
     volumes:
-      - ./etc/collector-config.yaml:/etc/otel-collector-config.yaml
+      - ./etc/collector-config.yaml:/etc/collector-config.yaml 
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
     networks:
       - obs-net
@@ -98,7 +94,7 @@ services:
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor,traceToMetrics,traceToLogs
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor,traceToMetrics,traceToLogs,explicitId
     networks:
       - obs-net
 
@@ -111,5 +107,3 @@ volumes:
 networks:
   obs-net:
     external: true
-
-# semua ports otel di tutup karena network obs-net itu internal sehingga komunikasi otel dengan nest js melalui network internal
