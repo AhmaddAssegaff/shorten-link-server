@@ -20,7 +20,7 @@ services:
       - obs-net
 
   tempo:
-    image: grafana/tempo:latest
+    image: grafana/tempo:2.4.1
     container_name: tempo
     restart: unless-stopped
     command: ["-config.file=/etc/tempo.yaml"]
@@ -43,11 +43,6 @@ services:
     container_name: loki
     restart: unless-stopped
     command: -config.file=/etc/loki/local-config.yaml
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3100/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     volumes:
       - ./etc/loki-config.yaml:/etc/loki/local-config.yaml
       - loki-data:/loki
@@ -57,16 +52,15 @@ services:
       - obs-net
 
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
+    image: otel/opentelemetry-collector-contrib:0.79.0
     container_name: otel-collector
-    user: root
     restart: unless-stopped
     command: ["--config=/etc/otel-collector-config.yaml"] 
     depends_on:
       tempo:
         condition: service_healthy
       loki:
-        condition: service_healthy
+        condition: service_started
       prometheus:
         condition: service_healthy
     volumes:
@@ -83,11 +77,11 @@ services:
       tempo:
         condition: service_healthy
       loki:
-        condition: service_healthy
+        condition: service_started
       prometheus:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "3001:3000"
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./etc/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
