@@ -90,6 +90,10 @@ services:
     container_name: otel-collector
     restart: unless-stopped
     command: ["--config=/etc/otel-collector-config.yaml"] 
+    ports:
+      - "4317:4317" # Untuk Trace/Log (gRPC)
+      - "4318:4318" # Untuk Trace/Log (HTTP)
+      - "8889:8889" # Untuk Prometheus narik data
     depends_on:
       tempo:
         condition: service_healthy
