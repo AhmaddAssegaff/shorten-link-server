@@ -1,9 +1,4 @@
 receivers:
-  filelog:
-    include:
-      - /var/lib/docker/containers/*/*.log
-    start_at: beginning
-
   otlp:
     protocols:
       grpc:
@@ -39,7 +34,7 @@ service:
       processors: [memory_limiter, batch]
       exporters: [otlp/tempo]
     logs:
-      receivers: [otlp, filelog]
+      receivers: [otlp]
       processors: [memory_limiter, batch]
       exporters: [loki]
     metrics:

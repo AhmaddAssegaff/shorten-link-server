@@ -38,6 +38,18 @@ services:
     networks:
       - obs-net
 
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./etc/promtail-config.yaml:/etc/promtail/config.yaml
+      - promtail-positions:/tmp 
+    command: -config.file=/etc/promtail/config.yaml
+    networks:
+      - obs-net
+
   loki:
     image: grafana/loki:latest
     container_name: loki
@@ -63,6 +75,8 @@ services:
         condition: service_started
       prometheus:
         condition: service_healthy
+      promtail:
+        condition: service_started
     volumes:
       - ./etc/otel-collector-config.yaml:/etc/otel-collector-config.yaml 
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
@@ -97,6 +111,7 @@ volumes:
   prometheus-data:
   tempo-data:
   loki-data:
+  promtail-positions:
 
 networks:
   obs-net:
