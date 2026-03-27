@@ -26,10 +26,6 @@ storage:
       path: /tmp/tempo/wal
     local:
       path: /tmp/tempo/traces
-    blocklist_poll: 5m
-    maintenance_interval: 5m
-
-search_enabled: true
 
 compactor:
   compaction:
