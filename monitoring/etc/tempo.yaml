@@ -26,7 +26,16 @@ storage:
       path: /tmp/tempo/wal
     local:
       path: /tmp/tempo/traces
+    blocklist_poll: 5m
+    maintenance_interval: 5m
+
+search_enabled: true
 
 compactor:
   compaction:
     block_retention: 24h
+
+overrides:
+  defaults:
+    ingestion:
+      max_traces_per_user: 10000
