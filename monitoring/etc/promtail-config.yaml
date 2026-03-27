@@ -19,6 +19,9 @@ scrape_configs:
 
     pipeline_stages:
       - docker: {}
-
-      - labels:
-          container_name:
+    relabel_configs:
+      - source_labels: ['__address__']
+        target_label: 'hostname'
+      - source_labels: ['__path__']
+        regex: '/var/lib/docker/containers/(?P<container_id>.+)/.+-json.log'
+        target_label: 'container_id'
