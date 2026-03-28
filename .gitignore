@@ -1,3 +1,17 @@
+# env
 .env
 .env
 **/.env
+
+# Private keys (VERY SENSITIVE)
+*.key
+*.pem
+*.crt
+
+# CSR & serial
+*.csr
+*.srl
+
+# Nginx certs directory
+etc/nginx/certs/*
+!etc/nginx/certs/.gitkeep
