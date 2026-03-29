@@ -1,0 +1,75 @@
+// OTEL RECEIVER (metrics + traces)
+otelcol.receiver.otlp "default" {
+  http {}
+}
+
+// DOCKER LOG SOURCE
+loki.source.docker "docker" {
+  host = "unix:///var/run/docker.sock"
+  targets = ["*"]
+  forward_to = [loki.process.docker.receiver]
+}
+
+// LOG PROCESSING
+loki.process "docker" {
+
+  stage.docker {}
+
+  stage.json {
+    expressions = {
+      trace_id = "trace_id"
+      level = "level"
+      msg = "msg"
+    }
+  }
+
+  stage.labels {
+    values = {
+      container = "{{ .container_name }}"
+      container_id = "{{ .container_id }}"
+      level = "{{ .level }}"
+    }
+  }
+
+  forward_to = [loki.write.default.receiver]
+}
+
+// EXPORT → TEMPO (traces)
+otelcol.exporter.otlphttp "tempo" {
+  endpoint = "http://tempo:3200/v1/traces"
+}
+
+// EXPORT → PROMETHEUS (metrics)
+prometheus.remote_write "default" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+  }
+}
+
+// EXPORT → LOKI (logs)
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
+
+// PROCESSOR
+otelcol.processor.batch "default" {}
+
+// PIPELINES
+otelcol.service "default" {
+  pipelines {
+
+    traces = [
+      otelcol.receiver.otlp.default,
+      otelcol.processor.batch.default,
+      otelcol.exporter.otlphttp.tempo,
+    ]
+
+    metrics = [
+      otelcol.receiver.otlp.default,
+      otelcol.processor.batch.default,
+      prometheus.remote_write.default,
+    ]
+  }
+}
