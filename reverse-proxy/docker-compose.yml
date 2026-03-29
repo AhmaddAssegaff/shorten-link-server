@@ -9,7 +9,18 @@ services:
       - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./etc/nginx/conf.d:/etc/nginx/conf.d
       - ./etc/nginx/certs:/etc/nginx/certs
+      - ./etc/nginx/www:/var/www/certbot
     restart: unless-stopped
+    networks:
+      - public-net
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./etc/nginx/certs:/etc/letsencrypt
+      - ./etc/nginx/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     networks:
       - public-net
 
