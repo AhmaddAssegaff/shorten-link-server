@@ -76,11 +76,17 @@ services:
     volumes:
       - ./etc/alloy-config.alloy:/etc/alloy/config.alloy
       - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/alloy/data
+      # - /proc:/rootfs/proc:ro
+      # - /sys:/sys:ro
     command:
       - run
-      - /etc/alloy/config.river
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - alloy-data:/var/lib/alloy/data
     ports:
       - "4318:4318" # OTLP HTTP
+      - 12345:12345
     networks:
       - obs-net
 
@@ -112,6 +118,7 @@ volumes:
   prometheus-data:
   tempo-data:
   loki-data:
+  alloy-data:
 
 networks:
   obs-net:
