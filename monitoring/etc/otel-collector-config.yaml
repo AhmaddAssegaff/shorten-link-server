@@ -14,7 +14,6 @@ processors:
     check_interval: 1s
     limit_mib: 512
   
-  # Tetap gunakan ini untuk memetakan resource attribute ke label Loki
   resource:
     attributes:
       - action: insert
@@ -27,7 +26,6 @@ exporters:
 
   loki:
     endpoint: http://loki:3100/loki/api/v1/push
-    # Hapus default_labels_enabled karena menyebabkan error unmarshal
 
   otlp/tempo:
     endpoint: tempo:4317
@@ -46,7 +44,7 @@ service:
       exporters: [otlp/tempo, logging]
     logs:
       receivers: [otlp]
-      processors: [memory_limiter, resource, batch] # Pastikan 'resource' ada di sini
+      processors: [memory_limiter, resource, batch]
       exporters: [loki]
     metrics:
       receivers: [otlp]
