@@ -13,6 +13,12 @@ processors:
   memory_limiter:
     check_interval: 1s
     limit_mib: 512
+  
+  resource:
+    attributes:
+      - action: insert
+        key: loki.resource.labels
+        value: service.name, service.namespace
 
 exporters:
   logging:
@@ -20,6 +26,9 @@ exporters:
 
   loki:
     endpoint: http://loki:3100/loki/api/v1/push
+    default_labels_enabled:
+      exporter: true
+      job: true
 
   otlp/tempo:
     endpoint: tempo:4317
@@ -38,7 +47,7 @@ service:
       exporters: [otlp/tempo, logging]
     logs:
       receivers: [otlp]
-      processors: [memory_limiter, batch]
+      processors: [memory_limiter, resource, batch]
       exporters: [loki]
     metrics:
       receivers: [otlp]
