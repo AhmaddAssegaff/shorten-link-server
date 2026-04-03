@@ -15,13 +15,13 @@ processors:
     limit_mib: 512
   
   attributes:
-      actions:
-        - action: insert
-          key: service_name
-          value: shorten-link-app
-        - action: insert
-          key: job
-          value: shorten-link-app
+    actions:
+      - action: insert
+        key: service_name
+        value: shorten-link-app
+      - action: insert
+        key: job
+        value: shorten-link-app
 
 exporters:
   logging:
@@ -29,6 +29,9 @@ exporters:
 
   loki:
     endpoint: http://loki:3100/loki/api/v1/push
+    default_labels_enabled:
+      exporter: true
+      job: true
 
   otlp/tempo:
     endpoint: tempo:4317
