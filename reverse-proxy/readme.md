@@ -112,7 +112,7 @@ ssl_certificate_key /etc/nginx/certs/drone.ahmadasgf.my.id/privkey.pem;
 ## 6. Start NGINX
 
 ```bash
-docker compose up -d
+docker compose up -d nginx
 ```
 
 ---
@@ -122,3 +122,61 @@ docker compose up -d
 * To avoid warnings, import `ca/ca.crt` into your system trust store
 * Never expose `ca.key` publicly ❗
 ---
+
+# Generating SSL Certificate (certbot)
+
+### change nginx conf ahmadasgf.my.id
+```nginx
+server {
+    listen 80;
+    server_name ahmadasgf.my.id www.ahmadasgf.my.id;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+```
+
+### change nginx conf drone.ahmadasgf.my.id
+```nginx
+server {
+    listen 80;
+    server_name drone.ahmadasgf.my.id;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+```
+### run nginx container
+```bash
+docker compose up -d nginx
+```
+
+## generate certificates drone.ahmadasgf.my.id with certbot
+```bash
+docker run --rm -v $(pwd)/etc/nginx/certs:/etc/letsencrypt -v $(pwd)/etc/nginx/www:/var/www/certbot certbot/certbot certonly --webroot --webroot-path=/var/www/certbot -d drone.ahmadasgf.my.id --email ahmadasgf89@gmail.com --agree-tos --no-eff-email
+```
+
+## generate certificates ahmadasgf.my.id with certbot
+```bash
+docker run --rm -v $(pwd)/etc/nginx/certs:/etc/letsencrypt -v $(pwd)/etc/nginx/www:/var/www/certbot certbot/certbot certonly --webroot --webroot-path=/var/www/certbot -d ahmadasgf.my.id --email ahmadasgf89@gmail.com --agree-tos --no-eff-email
+```
+
+### run certbot container
+```bash
+docker compose up -d certbot 
+```
+
+### delete cert (optional)
+```bash
+docker run -it --rm -v $(pwd)/etc/nginx/certs:/etc/letsencrypt certbot/certbot delete
+```
