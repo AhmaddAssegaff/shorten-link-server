@@ -14,14 +14,14 @@ processors:
     check_interval: 1s
     limit_mib: 512
   
-  attributes:
-    actions:
-      - action: insert
-        key: service_name
-        value: shorten-link-app
-      - action: insert
-        key: job
-        value: shorten-link-app
+resource:
+    attributes:
+      - action: upsert
+        key: service.name
+        value: "shorten-link-app"
+      - action: upsert
+        key: loki.resource.labels
+        value: "service.name"
 
 exporters:
   logging:
@@ -43,11 +43,11 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [memory_limiter, attributes, batch]
+      processors: [memory_limiter, resource, batch]
       exporters: [otlp/tempo, logging]
     logs:
       receivers: [otlp]
-      processors: [memory_limiter, attributes, batch]
+      processors: [memory_limiter, resource, batch]
       exporters: [loki]
     metrics:
       receivers: [otlp]
