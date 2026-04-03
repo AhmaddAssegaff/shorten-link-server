@@ -29,9 +29,6 @@ exporters:
 
   loki:
     endpoint: http://loki:3100/loki/api/v1/push
-    default_labels_enabled:
-      exporter: true
-      job: true
 
   otlp/tempo:
     endpoint: tempo:4317
@@ -46,7 +43,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [memory_limiter, batch]
+      processors: [memory_limiter, attributes, batch]
       exporters: [otlp/tempo, logging]
     logs:
       receivers: [otlp]
