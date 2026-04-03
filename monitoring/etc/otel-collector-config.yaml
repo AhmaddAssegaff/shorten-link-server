@@ -14,11 +14,14 @@ processors:
     check_interval: 1s
     limit_mib: 512
   
-  resource:
-    attributes:
-      - action: insert
-        key: loki.resource.labels
-        value: service.name
+  attributes:
+      actions:
+        - action: insert
+          key: service_name
+          value: shorten-link-app
+        - action: insert
+          key: job
+          value: shorten-link-app
 
 exporters:
   logging:
@@ -44,7 +47,7 @@ service:
       exporters: [otlp/tempo, logging]
     logs:
       receivers: [otlp]
-      processors: [memory_limiter, resource, batch]
+      processors: [memory_limiter, attributes, batch]
       exporters: [loki]
     metrics:
       receivers: [otlp]
