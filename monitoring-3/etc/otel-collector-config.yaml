@@ -1,0 +1,90 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: node-exporter
+          scrape_interval: 5s
+          static_configs:
+            - targets: ["node-exporter:9100"]
+
+  filelog:
+    include:
+      - /var/lib/docker/containers/*/*.log
+    start_at: beginning
+    include_file_path: true
+    include_file_name: false
+    operators:
+      - type: json_parser
+        id: docker-parser
+      - type: move
+        from: attributes.log
+        to: body
+      - type: regex_parser
+        regex: '^/var/lib/docker/containers/(?P<container_id>[^/]+)/.*log$'
+        parse_from: attributes["log.file.path"]
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 512
+    spike_limit_mib: 128
+  batch:
+    timeout: 200ms
+    send_batch_size: 8192
+  resource:
+    attributes:
+      - action: upsert
+        key: service.name
+        from_attribute: container.name
+
+exporters:
+  prometheusremotewrite:
+    endpoint: http://mimir:9009/api/v1/push
+    sending_queue:
+      enabled: true
+    retry_on_failure:
+      enabled: true
+
+  loki:
+    endpoint: http://loki:3100/loki/api/v1/push
+    labels:
+      attributes:
+        container: container.name
+        service: service.name
+
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+
+  logging:
+    loglevel: debug
+
+extensions:
+  health_check:
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [memory_limiter, batch]
+      exporters: [prometheusremotewrite, logging]
+    logs:
+      receivers: [otlp, filelog]
+      processors: [memory_limiter, batch, resource]
+      exporters: [loki, logging]
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/tempo, logging]
+
+  extensions: [health_check]
+
+  telemetry:
+    logs:
+      level: "debug"
